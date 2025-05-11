@@ -1,0 +1,32 @@
+{
+  "name": "zupfi",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:touch": "wrangler d1 execute expenses-db --local --command='SELECT 1'",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 migrations apply expenses-db --local",
+    "db:migrate:prod": "ENVIRONMENT=production drizzle-kit migrate",
+    "db:setup": "npm run db:touch && npm run db:generate && npm run db:migrate && npm run db:seed",
+    "db:studio": "drizzle-kit studio",
+    "lint": "biome check --write src",
+    "format": "biome format --write src"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.43.1",
+    "grammy": "^1.36.1",
+    "hono": "^4.7.9",
+    "zod": "^3.24.4"
+    
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",    
+    "@libsql/client": "^0.15.4",
+    "drizzle-kit": "^0.31.1",
+    "drizzle-seed": "^0.3.1",
+    "tsx": "^4.19.4",
+    "wrangler": "^4.14.4"
+  }
+}
