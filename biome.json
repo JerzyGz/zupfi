@@ -8,8 +8,10 @@
 	"files": {
 		"ignoreUnknown": false,
 		"ignore": [
+			"node_modules",
 			"dist",
-			"worker-configuration.d.ts"
+			"worker-configuration.d.ts",
+			".drizzle-out"
 		]
 	},
 	"formatter": {
