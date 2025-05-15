@@ -1,28 +1,25 @@
-import { categories as categoriesScheme } from "@/db/schema";
-import telegramRoute from "@/routes/telegram/telegram";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateObject, generateText } from "ai";
-import { drizzle } from "drizzle-orm/d1";
-import { Bot, type Context, webhookCallback } from "grammy";
-import type { Update, UserFromGetMe } from "grammy/types";
 import { Hono } from "hono";
-import { z } from "zod";
+import telegramRoute from "@/routes/telegram/telegram";
+import { FinancialTelegramAgent } from "@/agent/financial-telegram-agent";
+import type { AgentNamespace } from "agents";
+import type { UserFromGetMe } from "grammy/types";
+
+// The Durable Objects need to be exported from the entrypoint file defined in wrangler.jsonc
+export { FinancialTelegramAgent };
 
 export interface Env {
-	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	// MY_KV_NAMESPACE: KVNamespace;
-	//
-	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-	// MY_DURABLE_OBJECT: DurableObjectNamespace;
-
-	DB: D1Database;
-	BOT_INFO: UserFromGetMe;
 	TELEGRAM_TOKEN: string;
+	BOT_INFO: UserFromGetMe;
+	GEMINI_API_KEY: string;
+	FinancialTelegramAgent: AgentNamespace<FinancialTelegramAgent>;
 }
 
-const app = new Hono<{ Bindings: CloudflareBindings }>();
+const app = new Hono<{ Bindings: Env }>();
 
-app.post("/message", async (c) => {});
+app.post("/message", async (c) => {
+	console.log("req", await c.req.json());
+	return c.text("ok");
+});
 
 app.route("/telegram", telegramRoute);
 
