@@ -1,8 +1,8 @@
-import { Hono } from "hono";
-import telegramRoute from "@/routes/telegram/telegram";
 import { FinancialTelegramAgent } from "@/agent/financial-telegram-agent";
+import telegramRoute from "@/routes/telegram/telegram";
 import type { AgentNamespace } from "agents";
 import type { UserFromGetMe } from "grammy/types";
+import { Hono } from "hono";
 
 // The Durable Objects need to be exported from the entrypoint file defined in wrangler.jsonc
 export { FinancialTelegramAgent };
