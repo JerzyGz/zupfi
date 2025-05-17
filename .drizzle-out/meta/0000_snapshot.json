@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b21bb7f3-8b59-435f-8cbd-b013d3113a5b",
+  "id": "af987113-4bde-40b4-b3af-73f1ab0fd746",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -83,7 +83,7 @@
         },
         "spent_at": {
           "name": "spent_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -93,8 +93,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "'2025-05-11T04:43:00.632Z'"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -173,8 +172,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "'2025-05-11T04:43:00.632Z'"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -225,7 +223,7 @@
           "name": "user_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "email": {
@@ -262,8 +260,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "'2025-05-11T04:43:00.632Z'"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -285,6 +282,13 @@
           "name": "users_user_name_unique",
           "columns": [
             "user_name"
+          ],
+          "isUnique": true
+        },
+        "idChatUser": {
+          "name": "idChatUser",
+          "columns": [
+            "id_chat_user"
           ],
           "isUnique": true
         },

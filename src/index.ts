@@ -8,17 +8,18 @@ import { Hono } from "hono";
 export { FinancialTelegramAgent };
 
 export interface Env {
-	TELEGRAM_TOKEN: string;
-	BOT_INFO: UserFromGetMe;
-	GEMINI_API_KEY: string;
-	FinancialTelegramAgent: AgentNamespace<FinancialTelegramAgent>;
+  TELEGRAM_TOKEN: string;
+  BOT_INFO: UserFromGetMe;
+  GEMINI_API_KEY: string;
+  FinancialTelegramAgent: AgentNamespace<FinancialTelegramAgent>;
+  DB: D1Database;
 }
 
 const app = new Hono<{ Bindings: Env }>();
 
 app.post("/message", async (c) => {
-	console.log("req", await c.req.json());
-	return c.text("ok");
+  console.log("req", await c.req.json());
+  return c.text("ok");
 });
 
 app.route("/telegram", telegramRoute);
