@@ -61,7 +61,7 @@ telegramRoute.post("/chat-web-hook", async (c) => {
   });
 
   //allow only text message
-  bot.on("message:text", async (ctx) => {
+  bot.on("message:text", async () => {
     console.log("message:text", data.message.text);
 
     const tlgramAgent = await agent();
@@ -70,7 +70,7 @@ telegramRoute.post("/chat-web-hook", async (c) => {
   });
 
   //allow only photo message
-  bot.on("message:photo", async (ctx) => {
+  bot.on("message:photo", async () => {
     //TODO: pending to implement
     const tlgramAgent = await agent();
     tlgramAgent.processImageInvoice(data);

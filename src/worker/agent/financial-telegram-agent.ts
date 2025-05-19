@@ -15,8 +15,7 @@ import { z } from "zod";
 import { Bot } from "grammy";
 import type { Env } from "@/index";
 import { drizzle, type DrizzleD1Database } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
-import { expenses, users } from "@/db/schema";
+import { expenses } from "@/db/schema";
 import { getUtcDate } from "@/helpers/date";
 
 interface State {

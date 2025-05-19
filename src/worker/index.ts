@@ -1,5 +1,5 @@
 import { FinancialTelegramAgent } from "@/agent/financial-telegram-agent";
-import telegramRoute from "@/routes/telegram/telegram";
+import telegramRoute from "./routes/telegram/telegram";
 import type { AgentNamespace } from "agents";
 import type { UserFromGetMe } from "grammy/types";
 import { Hono } from "hono";
@@ -17,9 +17,15 @@ export interface Env {
 
 const app = new Hono<{ Bindings: Env }>();
 
-app.post("/message", async (c) => {
-  console.log("req", await c.req.json());
-  return c.text("ok");
+app.post("/message/", async (c) => {
+  try {
+    console.log("req", await c.req.json());
+  } catch (error) {
+    console.error("Error:", error);
+    return c.json({ error: error }, 500);
+  }
+
+  return c.json({ name: "Telegram agent" });
 });
 
 app.route("/telegram", telegramRoute);
