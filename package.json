@@ -1,18 +1,19 @@
 {
   "name": "zupfi",
   "scripts": {
-    "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts",
-    "cf-typegen": "wrangler types --include-env=false",
     "db:touch": "wrangler d1 execute expenses-db --local --command='SELECT 1'",
     "db:generate": "drizzle-kit generate --config=drizzle-dev.config.ts",
     "db:generate:custom": "drizzle-kit generate --custom --config=drizzle-dev.config.ts",
     "db:migrate": "wrangler d1 migrations apply expenses-db --local",
     "db:migrate:prod": "drizzle-kit migrate --config=drizzle-dev.config.ts",
     "db:setup": "pnpm run db:touch && pnpm run db:generate && pnpm run db:migrate",
-    "db:studio": "drizzle-kit studio",
-    "lint": "biome check --write src",
-    "format": "biome format --write src"
+    "build": "tsc -b && vite build",
+    "cf-typegen": "wrangler types --include-env=false",
+    "check": "tsc && vite build && wrangler deploy --dry-run",
+    "deploy": "npm run build && wrangler deploy",
+    "dev": "vite",
+    "lint": "eslint .",
+    "preview": "npm run build && vite preview"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.18",
@@ -23,14 +24,27 @@
     "drizzle-orm": "^0.43.1",
     "grammy": "^1.36.1",
     "hono": "^4.7.9",
-    "zod": "^3.24.4"
+    "zod": "^3.24.4",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@libsql/client": "^0.15.4",
     "drizzle-kit": "^0.31.1",
-    "drizzle-seed": "^0.3.1",
     "tsx": "^4.19.4",
-    "wrangler": "^4.14.4"
-  }
+    "@cloudflare/vite-plugin": "1.0.8",
+    "@eslint/js": "9.25.1",
+    "@types/node": "22.14.1",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
+    "@vitejs/plugin-react": "4.4.1",
+    "eslint": "9.25.1",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-react-refresh": "0.4.19",
+    "globals": "15.15.0",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.31.0",
+    "vite": "6.3.2",
+    "wrangler": "4.15.2"
+  },
+  "type": "module"
 }

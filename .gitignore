@@ -18,8 +18,8 @@ node_modules/
 # env
 .env
 .env.production
-.dev.vars
-.prod.vars
+.dev.vars*
+
 wrangler.jsonc
 worker-configuration.d.ts
 

@@ -1,20 +1,11 @@
 {
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.worker.json" }
+  ],
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "skipLibCheck": true,
-    "lib": ["ESNext"],
-    "types": [
-      "./worker-configuration.d.ts"
-      // "node"
-    ],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/server/*"]
-    }
+    "types": ["./worker-configuration.d.ts", "node"]
   }
 }
