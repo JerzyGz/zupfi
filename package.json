@@ -18,6 +18,8 @@
   "dependencies": {
     "@ai-sdk/google": "^1.2.18",
     "@hono/zod-validator": "^0.5.0",
+    "@tanstack/react-router": "^1.120.5",
+    "@tanstack/react-router-devtools": "^1.120.6",
     "agents": "^0.0.85",
     "ai": "^4.3.15",
     "dotenv": "^16.5.0",
@@ -32,9 +34,10 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.2.2",
     "@eslint/js": "9.27.0",
+    "@tailwindcss/vite": "^4.1.7",
+    "@tanstack/router-plugin": "^1.120.5",
     "@types/node": "22.15.19",
     "@types/react": "19.1.4",
-    "@tailwindcss/vite": "^4.1.7",
     "@types/react-dom": "19.1.5",
     "@vitejs/plugin-react": "4.4.1",
     "drizzle-kit": "^0.31.1",
