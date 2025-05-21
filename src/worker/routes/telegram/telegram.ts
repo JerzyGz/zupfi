@@ -1,12 +1,12 @@
-import type { FinancialTelegramAgent } from "@/agent/financial-telegram-agent";
-import type { Env } from "@/index";
+import type { FinancialTelegramAgent } from "@/worker/agent/financial-telegram-agent";
+import type { Env } from "@/worker/index";
 import { getAgentByName } from "agents";
 import { Bot, type Context, webhookCallback } from "grammy";
 import { Hono } from "hono";
 import type { IncomingMessage } from "./validator";
 import { drizzle } from "drizzle-orm/d1";
-import { users } from "@/db/schema";
-import { getUtcDate } from "@/helpers/date";
+import { users } from "@/worker/db/schema";
+import { getUtcDate } from "@/worker/helpers/date";
 import { welcomeMessage } from "./responses";
 
 const telegramRoute = new Hono<{ Bindings: Env }>();
@@ -21,7 +21,7 @@ telegramRoute.post("/chat-web-hook", async (c) => {
   const agent = async () => {
     return getAgentByName<Env, FinancialTelegramAgent>(
       c.env.FinancialTelegramAgent,
-      `agent-${data.message.chat.id.toString()}`,
+      `agent-${data.message.chat.id.toString()}`
     );
   };
   const bot = new Bot(c.env.TELEGRAM_TOKEN, {

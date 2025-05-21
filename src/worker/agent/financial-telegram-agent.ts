@@ -5,18 +5,18 @@ import {
   type LanguageModelV1,
   type Message,
 } from "ai";
-import type { IncomingMessage } from "@/routes/telegram/validator";
-import { agentPromptV2, categoriesArr } from "@/routes/telegram/prompts";
+import type { IncomingMessage } from "@/worker/routes/telegram/validator";
+import { agentPromptV2, categoriesArr } from "@/worker/routes/telegram/prompts";
 import {
   createGoogleGenerativeAI,
   type GoogleGenerativeAIProvider,
 } from "@ai-sdk/google";
 import { z } from "zod";
 import { Bot } from "grammy";
-import type { Env } from "@/index";
+import type { Env } from "@/worker/index";
 import { drizzle, type DrizzleD1Database } from "drizzle-orm/d1";
-import { expenses } from "@/db/schema";
-import { getUtcDate } from "@/helpers/date";
+import { expenses } from "@/worker/db/schema";
+import { getUtcDate } from "@/worker/helpers/date";
 
 interface State {
   userId: string;
@@ -139,7 +139,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
       if (!classifyResult.data.valid) {
         this.sendMessage(
           message.chat.id,
-          "Lo siento, solo puedo ayudarte con temas relacionados a tus finanzas personales",
+          "Lo siento, solo puedo ayudarte con temas relacionados a tus finanzas personales"
         );
         return;
       }
@@ -155,7 +155,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
           JSON.stringify({
             classifyResult,
             text,
-          }),
+          })
         );
         return;
       }
@@ -175,7 +175,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
           data,
           classificationUsage: classifyResult.usage,
           extractionUsage,
-        }),
+        })
       );
 
       //TODO: remove later
@@ -191,7 +191,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
             error instanceof Error
               ? error.message
               : "An unknown error occurred",
-        }),
+        })
       );
     }
   }
@@ -215,7 +215,10 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
   async extractInformation({
     query,
     model,
-  }: { query: string; model: LanguageModelV1 }) {
+  }: {
+    query: string;
+    model: LanguageModelV1;
+  }) {
     const { object, usage } = await generateObject({
       model,
       schema: ExpenseDataSchema,
@@ -260,7 +263,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
       if (!filePath) {
         this.sendMessage(
           chatId,
-          "No se pudo obtener la información del archivo de la imagen.",
+          "No se pudo obtener la información del archivo de la imagen."
         );
         return;
       }
@@ -270,7 +273,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
       if (!imageResponse.ok) {
         this.sendMessage(
           chatId,
-          `Error al descargar la imagen: ${imageResponse.statusText}`,
+          `Error al descargar la imagen: ${imageResponse.statusText}`
         );
         return;
       }
@@ -324,7 +327,11 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
 
       this.sendMessage(
         chatId,
-        `Información extraída de la factura:\n${JSON.stringify({ invoiceData, usage }, null, 2)}`,
+        `Información extraída de la factura:\n${JSON.stringify(
+          { invoiceData, usage },
+          null,
+          2
+        )}`
       );
       //TODO: remove later
       this.sumCounter();

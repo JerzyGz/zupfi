@@ -20,7 +20,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "/src/worker"),
+      "@server": path.resolve(__dirname, "/src/worker"),
+      "@web": path.resolve(__dirname, "/src/react-app"),
     },
   },
 });

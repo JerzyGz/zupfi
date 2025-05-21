@@ -1,4 +1,4 @@
-import { type SQL, relations, sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   integer,
   real,
@@ -34,8 +34,10 @@ export const users = sqliteTable(
    */
   (table) => [
     uniqueIndex("idChatUser").on(table.idChatUser),
-    uniqueIndex("email_index").on(table.email).where(sql`"email" IS NOT NULL`),
-  ],
+    uniqueIndex("email_index")
+      .on(table.email)
+      .where(sql`"email" IS NOT NULL`),
+  ]
 );
 // Categories table
 export const categories = sqliteTable("categories", {
