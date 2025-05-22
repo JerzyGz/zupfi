@@ -18,7 +18,7 @@ function LandingPage() {
         <img src={viteLogo} className="logo" alt="Vite logo" />
         <div>
           <SignedOut>
-            <SignInButton />
+            <SignInButton mode="modal" />
           </SignedOut>
           <SignedIn>
             <UserButton />

@@ -23,7 +23,7 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/react-app/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src/react-app"]

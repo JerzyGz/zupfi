@@ -1,3 +1,9 @@
+import { AppSidebar } from "@/react-app/components/app-sidebar";
+import { SiteHeader } from "@/react-app/components/site-header";
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/react-app/components/ui/sidebar";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth")({
@@ -19,11 +25,15 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthLayout() {
-  console.log("AuthLayout component");
   return (
-    <div>
-      <h1>(AuthLayout)Esta página es para autenticados</h1>
-      <Outlet />
-    </div>
+    <SidebarProvider>
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
+        <div className="flex flex-1 flex-col">
+          <Outlet />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
