@@ -1,6 +1,6 @@
 {
-  "id": "d5bfcecf-28c1-4573-8ee4-1f5de39c6097",
-  "prevId": "af987113-4bde-40b4-b3af-73f1ab0fd746",
+  "id": "d32ac7c0-fddb-429f-9c0f-201a5118367d",
+  "prevId": "a7acb760-3805-42a3-b80e-1377f72fbe6f",
   "version": "6",
   "dialect": "sqlite",
   "tables": {
@@ -212,11 +212,18 @@
           "notNull": true,
           "autoincrement": false
         },
-        "id_chat_user": {
-          "name": "id_chat_user",
+        "chat_telegram_id": {
+          "name": "chat_telegram_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "clerk_id": {
+          "name": "clerk_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "user_name": {
@@ -271,10 +278,17 @@
         }
       },
       "indexes": {
-        "users_id_chat_user_unique": {
-          "name": "users_id_chat_user_unique",
+        "users_chat_telegram_id_unique": {
+          "name": "users_chat_telegram_id_unique",
           "columns": [
-            "id_chat_user"
+            "chat_telegram_id"
+          ],
+          "isUnique": true
+        },
+        "users_clerk_id_unique": {
+          "name": "users_clerk_id_unique",
+          "columns": [
+            "clerk_id"
           ],
           "isUnique": true
         },
@@ -285,10 +299,17 @@
           ],
           "isUnique": true
         },
-        "idChatUser": {
-          "name": "idChatUser",
+        "chat_telegram_id": {
+          "name": "chat_telegram_id",
           "columns": [
-            "id_chat_user"
+            "chat_telegram_id"
+          ],
+          "isUnique": true
+        },
+        "clerk_id": {
+          "name": "clerk_id",
+          "columns": [
+            "clerk_id"
           ],
           "isUnique": true
         },

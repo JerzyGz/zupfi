@@ -4,7 +4,7 @@ import { defineConfig } from 'drizzle-kit';
 config({ path: "./.prod.vars" });
 
 export default defineConfig({
-  schema: './src/db/schemas.ts',
+  schema: './src/worker/db/schemas.ts',
   out: './.drizzle-out',
   dialect: 'sqlite',
   driver: 'd1-http',

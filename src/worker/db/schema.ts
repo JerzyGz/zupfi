@@ -16,10 +16,9 @@ const timestampsColumns = {
 export const users = sqliteTable(
   "users",
   {
-    id: text("id")
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
-    idChatUser: integer("id_chat_user").notNull().unique(),
+    id: text("id").primaryKey(),
+    chatTelegramId: integer("chat_telegram_id").unique(),
+    clerkId: text("clerk_id").unique(),
     userName: text("user_name").unique(),
     email: text("email"),
     name: text("name"),
@@ -33,7 +32,8 @@ export const users = sqliteTable(
    * and Partial index because email can be null
    */
   (table) => [
-    uniqueIndex("idChatUser").on(table.idChatUser),
+    uniqueIndex("chat_telegram_id").on(table.chatTelegramId),
+    uniqueIndex("clerk_id").on(table.clerkId),
     uniqueIndex("email_index")
       .on(table.email)
       .where(sql`"email" IS NOT NULL`),
@@ -51,9 +51,7 @@ export const categories = sqliteTable("categories", {
 
 // Expenses table
 export const expenses = sqliteTable("expenses", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+  id: text("id").primaryKey(),
   userId: text("user_id")
     .references(() => users.id)
     .notNull(),
@@ -63,15 +61,12 @@ export const expenses = sqliteTable("expenses", {
   amount: real("amount").notNull(),
   description: text("description"),
   spentAt: text("spent_at").notNull(),
-  // .$defaultFn(() => new Date()),
   ...timestampsColumns,
 });
 
 // Goals table
 export const goals = sqliteTable("goals", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+  id: text("id").primaryKey(),
   userId: text("user_id")
     .references(() => users.id)
     .notNull(),
@@ -107,4 +102,10 @@ export const goalsRelations = relations(goals, ({ one }) => ({
   }),
 }));
 
-export type NewUser = typeof users.$inferInsert;
+// TODO: Move type definitions to their respective feature modules for better code organization and maintainability
+export type NewCategory = typeof categories.$inferInsert;
+export type Category = typeof categories.$inferSelect;
+export type NewExpense = typeof expenses.$inferInsert;
+export type Expense = typeof expenses.$inferSelect;
+export type NewGoal = typeof goals.$inferInsert;
+export type Goal = typeof goals.$inferSelect;

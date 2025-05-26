@@ -67,9 +67,9 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
     console.log("ctx", ctx);
 
     this.googleAI = createGoogleGenerativeAI({
-      apiKey: this.env.GEMINI_API_KEY,
+      apiKey: env.GEMINI_API_KEY,
     });
-    this.bot = new Bot(this.env.TELEGRAM_TOKEN);
+    this.bot = new Bot(env.TELEGRAM_TOKEN);
     this.db = drizzle(env.DB);
   }
 
@@ -200,6 +200,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
     const { categoryId, amount, description, spentAt } = expenseData;
     const date = getUtcDate();
     const data = {
+      id: crypto.randomUUID(),
       userId: this.state.userId,
       categoryId,
       amount,

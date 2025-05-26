@@ -6,7 +6,7 @@ if (!localD1DB) {
   process.exit(1);
 }
 export default defineConfig({
-  schema: './src/db/schema.ts',
+  schema: './src/worker/db/schema.ts',
   out: './.drizzle-out',
   dialect: 'sqlite',
   dbCredentials: {

@@ -30,7 +30,8 @@ CREATE TABLE `goals` (
 --> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
-	`id_chat_user` integer NOT NULL,
+	`chat_telegram_id` integer,
+	`clerk_id` text,
 	`user_name` text,
 	`email` text,
 	`name` text,
@@ -40,7 +41,9 @@ CREATE TABLE `users` (
 	`updated_at` text NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `users_id_chat_user_unique` ON `users` (`id_chat_user`);--> statement-breakpoint
+CREATE UNIQUE INDEX `users_chat_telegram_id_unique` ON `users` (`chat_telegram_id`);--> statement-breakpoint
+CREATE UNIQUE INDEX `users_clerk_id_unique` ON `users` (`clerk_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `users_user_name_unique` ON `users` (`user_name`);--> statement-breakpoint
-CREATE UNIQUE INDEX `idChatUser` ON `users` (`id_chat_user`);--> statement-breakpoint
+CREATE UNIQUE INDEX `chat_telegram_id` ON `users` (`chat_telegram_id`);--> statement-breakpoint
+CREATE UNIQUE INDEX `clerk_id` ON `users` (`clerk_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `email_index` ON `users` (`email`) WHERE "email" IS NOT NULL;

@@ -30,12 +30,15 @@ telegramRoute.post("/chat-web-hook", async (c) => {
 
   bot.command("start", async (ctx: Context) => {
     // first time interaction save user in db
+
+    //TODO:
     const db = drizzle(c.env.DB);
     const date = getUtcDate();
     const userInserted = await db
       .insert(users)
       .values({
-        idChatUser: data.message.chat.id,
+        id: crypto.randomUUID(),
+        chatTelegramId: data.message.chat.id,
         userName: data.message.from.username,
         email: data.message.from.username,
         name: data.message.from.first_name,
@@ -43,7 +46,7 @@ telegramRoute.post("/chat-web-hook", async (c) => {
         createdAt: date,
         updatedAt: date,
       })
-      .onConflictDoNothing({ target: users.idChatUser })
+      .onConflictDoNothing({ target: users.chatTelegramId })
       .returning({ id: users.id });
 
     if (userInserted.length) {
