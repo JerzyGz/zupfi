@@ -3,7 +3,7 @@ import telegramRoute from "./routes/telegram";
 import type { AgentNamespace } from "agents";
 import type { UserFromGetMe } from "grammy/types";
 import { Hono } from "hono";
-import clerkWebhook from "./modules/user/user.route";
+import userApp from "./modules/user/user.route";
 
 // The Durable Objects need to be exported from the entrypoint file defined in wrangler.jsonc
 export { FinancialTelegramAgent };
@@ -12,6 +12,7 @@ export interface Env {
   TELEGRAM_TOKEN: string;
   CLERK_SECRET_KEY: string;
   CLERK_WEBHOOK_SIGNING_SECRET: string;
+  JWT_SECRET: string; // created with `openssl rand -base64 32`
   BOT_INFO: UserFromGetMe;
   GEMINI_API_KEY: string;
   FinancialTelegramAgent: AgentNamespace<FinancialTelegramAgent>;
@@ -19,16 +20,8 @@ export interface Env {
 }
 
 const app = new Hono<{ Bindings: Env }>();
-app.get("/message", async (c) => {
-  console.log("DB", c.env.DB);
-  return c.json({ name: "Telegram agent" });
-});
-
-app.get("/dashboard/", async (c) => {
-  return c.text("Dashboard");
-});
 
 app.route("/telegram", telegramRoute);
-app.route("/api", clerkWebhook);
+app.route("/api", userApp);
 
 export default app;

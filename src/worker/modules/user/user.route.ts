@@ -3,8 +3,10 @@ import { Hono } from "hono";
 import { Webhook } from "svix";
 import { Env } from "@/worker/index";
 import { getDrizzleDb } from "@/worker/db";
+import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 import { UserRepository } from "./user.repository";
 import { UserService } from "./user.service";
+import { AuthService } from "@/worker/modules/auth/auth.service";
 
 interface ClerkWebhookEvent {
   type: string;
@@ -18,9 +20,9 @@ interface ClerkWebhookEvent {
   };
 }
 
-const clerkWebhook = new Hono<{ Bindings: Env }>();
+const userApp = new Hono<{ Bindings: Env }>();
 
-clerkWebhook.post("/user/clerk-webhook", async (c) => {
+userApp.post("/user/clerk-webhook", async (c) => {
   const CLERK_WEBHOOK_SIGNING_SECRET = c.env.CLERK_WEBHOOK_SIGNING_SECRET;
 
   try {
@@ -60,4 +62,25 @@ clerkWebhook.post("/user/clerk-webhook", async (c) => {
   }
 });
 
-export default clerkWebhook;
+userApp.get("/user/generate-tlgram-deeplink", clerkMiddleware(), async (c) => {
+
+  const auth = getAuth(c);
+  if (!auth?.userId) {
+
+    return c.json({
+      success: false,
+      error: "Unauthorized",
+    }, 401);
+  }
+  const token = await new AuthService(c.env).generateTemporalToken({
+    clerkId: auth.userId,
+  });
+
+  console.log({ auth });
+  const url = `t.me/zupfi_bot?start=${token}`;
+  return c.json({
+    url
+  });
+})
+
+export default userApp;

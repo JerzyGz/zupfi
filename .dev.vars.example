@@ -1,3 +1,7 @@
 ENVIRONMENT="development"
 TELEGRAM_TOKEN=xxxxxxxxxxxxxxxx
 GEMINI_API_KEY=xxxxxxxxxxxxxxxx
+CLERK_PUBLISHABLE_KEY=xxxxxxxxxxxxxxxx
+CLERK_SECRET_KEY=xxxxxxxxxxxxxxxx
+CLERK_WEBHOOK_SIGNING_SECRET=xxxxxxxxxxxxxxxx
+JWT_SECRET=xxxxxxxxxxxxxxxx
