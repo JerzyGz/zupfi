@@ -3,10 +3,10 @@ import { Hono } from "hono";
 import { Webhook } from "svix";
 import { Env } from "@/worker/index";
 import { getDrizzleDb } from "@/worker/db";
-import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 import { UserRepository } from "./user.repository";
 import { UserService } from "./user.service";
-import { AuthService } from "@/worker/modules/auth/auth.service";
+import { authClerkMiddleware } from "@/worker/middlewares/auth.middleware";
+import { TelegramDeepLinkTokenManager } from "@/worker/modules/tokens/telegram-deeplink-token-manager";
 
 interface ClerkWebhookEvent {
   type: string;
@@ -27,16 +27,19 @@ userApp.post("/user/clerk-webhook", async (c) => {
 
   try {
     const headers = {
-      "svix-id": c.req.header("svix-id") || '',
-      "svix-timestamp": c.req.header("svix-timestamp") || '',
-      "svix-signature": c.req.header("svix-signature") || '',
+      "svix-id": c.req.header("svix-id") || "",
+      "svix-timestamp": c.req.header("svix-timestamp") || "",
+      "svix-signature": c.req.header("svix-signature") || "",
     };
 
     const payload = await c.req.json();
     // Create a new Webhook instance with the Clerk signing secret
     const wh = new Webhook(CLERK_WEBHOOK_SIGNING_SECRET);
     // Verify the webhook signature and parse the event
-    const evt = wh.verify(JSON.stringify(payload), headers) as ClerkWebhookEvent;
+    const evt = wh.verify(
+      JSON.stringify(payload),
+      headers
+    ) as ClerkWebhookEvent;
 
     const db = getDrizzleDb(c.env.DB);
     const userRepository = new UserRepository(db);
@@ -62,25 +65,23 @@ userApp.post("/user/clerk-webhook", async (c) => {
   }
 });
 
-userApp.get("/user/generate-tlgram-deeplink", clerkMiddleware(), async (c) => {
+userApp.get(
+  "/user/generate-tlgram-deeplink",
+  authClerkMiddleware,
+  async (c) => {
+    const clerkId = c.get("clerkId");
 
-  const auth = getAuth(c);
-  if (!auth?.userId) {
-
+    const url = await new TelegramDeepLinkTokenManager(
+      c.env.TEMP_TOKENS
+    ).generateTelegramDeepLinkTokenUrl({
+      id: clerkId,
+      botName: c.env.BOT_INFO.username,
+      prefixToken: c.env.CUSTOM_PREFIX_TOKEN,
+    });
     return c.json({
-      success: false,
-      error: "Unauthorized",
-    }, 401);
+      url,
+    });
   }
-  const token = await new AuthService(c.env).generateTemporalToken({
-    clerkId: auth.userId,
-  });
-
-  console.log({ auth });
-  const url = `t.me/zupfi_bot?start=${token}`;
-  return c.json({
-    url
-  });
-})
+);
 
 export default userApp;

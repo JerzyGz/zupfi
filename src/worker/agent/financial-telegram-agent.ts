@@ -6,7 +6,7 @@ import {
   type Message,
 } from "ai";
 import type { IncomingMessage } from "@/worker/routes/telegram/validator";
-import { agentPromptV2, categoriesArr } from "@/worker/routes/telegram/prompts";
+import { agentPromptV2, categoriesArr } from "@/worker/agent/prompts";
 import {
   createGoogleGenerativeAI,
   type GoogleGenerativeAIProvider,

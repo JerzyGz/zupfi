@@ -12,11 +12,13 @@ export interface Env {
   TELEGRAM_TOKEN: string;
   CLERK_SECRET_KEY: string;
   CLERK_WEBHOOK_SIGNING_SECRET: string;
-  JWT_SECRET: string; // created with `openssl rand -base64 32`
+  CLERK_PUBLISHABLE_KEY: string;
   BOT_INFO: UserFromGetMe;
+  CUSTOM_PREFIX_TOKEN: string;
   GEMINI_API_KEY: string;
   FinancialTelegramAgent: AgentNamespace<FinancialTelegramAgent>;
   DB: D1Database;
+  TEMP_TOKENS: KVNamespace;
 }
 
 const app = new Hono<{ Bindings: Env }>();

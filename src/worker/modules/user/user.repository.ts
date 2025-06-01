@@ -2,8 +2,7 @@ import { eq } from "drizzle-orm";
 import { users } from "../../db/schema";
 import { DrizzleDBType } from "../../db";
 import { User, UserCreate } from "./user.types";
-
-
+import { getUtcDate } from "@/worker/helpers/date";
 
 export class UserRepository {
   private db;
@@ -31,7 +30,18 @@ export class UserRepository {
     const [user] = await this.db
       .select()
       .from(users)
-      .where(eq(users.clerkId, clerkId));
+      .where(eq(users.clerkId, clerkId))
+      .limit(1);
     return user;
+  }
+
+  async linkClerkIdToUserTelegram(
+    clerkId: string,
+    chatTelegramId: number
+  ): Promise<void> {
+    await this.db
+      .update(users)
+      .set({ chatTelegramId, updatedAt: getUtcDate() })
+      .where(eq(users.clerkId, clerkId));
   }
 }
