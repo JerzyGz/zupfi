@@ -14,9 +14,9 @@ import {
 import { z } from "zod";
 import { Bot } from "grammy";
 import type { Env } from "@/worker/index";
-import { drizzle, type DrizzleD1Database } from "drizzle-orm/d1";
 import { expenses } from "@/worker/db/schema";
 import { getUtcDate } from "@/worker/helpers/date";
+import { DrizzleDBType, getDrizzleDb } from "@/worker/db";
 
 interface State {
   userId: string;
@@ -59,7 +59,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
 
   private readonly googleAI: GoogleGenerativeAIProvider;
   private readonly bot: Bot;
-  private readonly db: DrizzleD1Database;
+  private readonly db: DrizzleDBType;
 
   constructor(ctx: AgentContext, env: Env) {
     super(ctx, env);
@@ -70,7 +70,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
       apiKey: env.GEMINI_API_KEY,
     });
     this.bot = new Bot(env.TELEGRAM_TOKEN);
-    this.db = drizzle(env.DB);
+    this.db = getDrizzleDb();
   }
 
   async setInitUserState(user: {

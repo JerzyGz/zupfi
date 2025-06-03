@@ -52,7 +52,7 @@ telegramRoute.post("/chat-web-hook", async (c) => {
       }
       // User exists, link the Telegram user with the Clerk user
       const chatTelegramId = ctx.message?.chat.id;
-      const user = new UserService(new UserRepository(getDrizzleDb(c.env)));
+      const user = new UserService(new UserRepository(getDrizzleDb()));
       const userLinked = await user.linkClerkIdToUserTelegram({
         clerkId: tokenValidationResult.userId,
         chatTelegramId,

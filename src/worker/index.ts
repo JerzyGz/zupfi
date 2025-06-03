@@ -4,15 +4,14 @@ import type { AgentNamespace } from "agents";
 import type { UserFromGetMe } from "grammy/types";
 import { Hono } from "hono";
 import userApp from "./modules/user/user.route";
+import { authRouter } from "@/worker/modules/auth/auth.route";
 
 // The Durable Objects need to be exported from the entrypoint file defined in wrangler.jsonc
 export { FinancialTelegramAgent };
 
 export interface Env {
   TELEGRAM_TOKEN: string;
-  CLERK_SECRET_KEY: string;
-  CLERK_WEBHOOK_SIGNING_SECRET: string;
-  CLERK_PUBLISHABLE_KEY: string;
+
   TURSO_DATABASE_URL: string;
   TURSO_AUTH_TOKEN: string;
   BOT_INFO: UserFromGetMe;
@@ -25,6 +24,8 @@ export interface Env {
 const app = new Hono<{ Bindings: Env }>();
 
 app.route("/telegram", telegramRoute);
-app.route("/api", userApp);
+
+app.route("/api", authRouter);
+app.route("/api/auth", userApp);
 
 export default app;
