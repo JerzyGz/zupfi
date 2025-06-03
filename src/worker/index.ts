@@ -13,11 +13,12 @@ export interface Env {
   CLERK_SECRET_KEY: string;
   CLERK_WEBHOOK_SIGNING_SECRET: string;
   CLERK_PUBLISHABLE_KEY: string;
+  TURSO_DATABASE_URL: string;
+  TURSO_AUTH_TOKEN: string;
   BOT_INFO: UserFromGetMe;
   CUSTOM_PREFIX_TOKEN: string;
   GEMINI_API_KEY: string;
   FinancialTelegramAgent: AgentNamespace<FinancialTelegramAgent>;
-  DB: D1Database;
   TEMP_TOKENS: KVNamespace;
 }
 

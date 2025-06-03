@@ -1,12 +1,19 @@
-import { drizzle } from "drizzle-orm/d1";
+import { createClient } from "@libsql/client/web";
+import { drizzle } from "drizzle-orm/libsql";
+import { Env } from "@/worker";
 
 export type DrizzleDBType = ReturnType<typeof drizzle>;
 
 let cacheDrizzleDB: DrizzleDBType | null = null;
 
-export function getDrizzleDb(d1: D1Database): DrizzleDBType {
+export function getDrizzleDb(env: Env): DrizzleDBType {
   if (!cacheDrizzleDB) {
-    cacheDrizzleDB = drizzle(d1);
+    cacheDrizzleDB = drizzle(
+      createClient({
+        url: env.TURSO_DATABASE_URL,
+        authToken: env.TURSO_AUTH_TOKEN,
+      })
+    );
   }
   return cacheDrizzleDB;
 }

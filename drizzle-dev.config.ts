@@ -1,17 +1,17 @@
-import { defineConfig } from 'drizzle-kit';
-import { getLocalD1DB } from './scripts/utils-local-db';
+import { config } from "dotenv";
+import { defineConfig } from "drizzle-kit";
 
-const localD1DB = getLocalD1DB();
-if (!localD1DB) {
-  process.exit(1);
-}
+config({ path: "./.dev.vars" });
+
 export default defineConfig({
-  schema: './src/worker/db/schema.ts',
-  out: './.drizzle-out',
-  dialect: 'sqlite',
+  schema: "./src/worker/db/schema.ts",
+  out: "./.drizzle-out",
+  dialect: "turso",
   dbCredentials: {
-    url: localD1DB,
+    url: process.env.TURSO_DATABASE_URL!,
+    authToken: process.env.TURSO_AUTH_TOKEN,
   },
   verbose: true,
+  breakpoints: true,
+  strict: true,
 });
-

@@ -41,7 +41,7 @@ userApp.post("/user/clerk-webhook", async (c) => {
       headers
     ) as ClerkWebhookEvent;
 
-    const db = getDrizzleDb(c.env.DB);
+    const db = getDrizzleDb(c.env);
     const userRepository = new UserRepository(db);
     const userService = new UserService(userRepository);
     switch (evt.type) {

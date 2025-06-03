@@ -1,5 +1,3 @@
--- Custom SQL migration file, put your code below! --
---> statement-breakpoint
 INSERT INTO categories (id, name, description, language_code) VALUES
 ('f495bafd-f0f6-4f73-872b-2e87108ae047', 'Comida y Restaurantes', 'Comestibles, restaurantes y entrega de comida', 'es'),
 ('36289cde-b8a6-46a3-8acf-a896f77366a0', 'Transporte', 'Transporte público, combustible, mantenimiento del coche y servicios de transporte', 'es'),
