@@ -14,9 +14,10 @@ import {
 import { z } from "zod";
 import { Bot } from "grammy";
 import type { Env } from "@/worker/index";
-import { expenses } from "@/worker/db/schema";
+import { expenses, user } from "@/worker/db/schema";
 import { getUtcDate } from "@/worker/helpers/date";
 import { DrizzleDBType, getDrizzleDb } from "@/worker/db";
+import { eq } from "drizzle-orm";
 
 interface State {
   userId: string;
@@ -63,8 +64,6 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
 
   constructor(ctx: AgentContext, env: Env) {
     super(ctx, env);
-    console.log("******  Constructor  ***********");
-    console.log("ctx", ctx);
 
     this.googleAI = createGoogleGenerativeAI({
       apiKey: env.GEMINI_API_KEY,
@@ -88,6 +87,12 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
 
   async sendMessage(id: number, message: string) {
     this.bot.api.sendMessage(id, message);
+  }
+
+  async sendFeedbackReactionCheckReaction(chatId: number, messageId: number) {
+    this.bot.api.setMessageReaction(chatId, messageId, [
+      { type: "emoji", emoji: "👍" },
+    ]);
   }
 
   async classifyMessage({
@@ -143,65 +148,54 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
         );
         return;
       }
-
       if (classifyResult.data.type === "other") {
         const { text } = await generateText({
           system: agentPromptV2,
           model,
           prompt: `<user-message>${query}</user-message>`,
         });
-        this.sendMessage(
-          message.chat.id,
-          JSON.stringify({
-            classifyResult,
-            text,
-          })
-        );
+
+        this.sendMessage(message.chat.id, text);
         return;
       }
 
       // if classification type === 'expense' or 'query'
-      const { data, usage: extractionUsage } = await this.extractInformation({
+      //TODO: save usage tokens in the database
+      //TODO: Call tool to perform query to the database
+      const { data } = await this.extractInformation({
         query,
         model,
       });
 
       await this.saveExpense(data);
 
-      this.sendMessage(
+      this.sendFeedbackReactionCheckReaction(
         message.chat.id,
-        JSON.stringify({
-          classifyResult,
-          data,
-          classificationUsage: classifyResult.usage,
-          extractionUsage,
-        })
+        message.message_id
       );
-
-      //TODO: remove later
-      this.sumCounter();
     } catch (error) {
-      console.log(error);
-      // TODO: - log error
-      // Improve message to send to user
+      console.log("ERROR: Processing message failed", error);
+
       this.sendMessage(
         message.chat.id,
-        JSON.stringify({
-          error:
-            error instanceof Error
-              ? error.message
-              : "An unknown error occurred",
-        })
+        "Hubo un error al procesar tu mensaje. Por favor, intenta nuevamente más tarde."
       );
     }
   }
 
   async saveExpense(expenseData: ExpenseData) {
     const { categoryId, amount, description, spentAt } = expenseData;
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, chatTelegramId] = this.name.split("-");
+    const [usr] = await this.db
+      .select({ userId: user.id })
+      .from(user)
+      .where(eq(user.chatTelegramId, parseInt(chatTelegramId)));
     const date = getUtcDate();
     const data = {
       id: crypto.randomUUID(),
-      userId: this.state.userId,
+      userId: usr.userId,
       categoryId,
       amount,
       description,
@@ -209,7 +203,6 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
       createdAt: date,
       updatedAt: date,
     };
-    console.log("expenseData", data);
     await this.db.insert(expenses).values(data);
   }
 
@@ -227,7 +220,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
             Tu tarea es analizar el mensaje del usuario y extraer información sobre un gasto.
             Utiliza <current_date> como referencia para calcular fechas relativas (ej. "ayer", "hoy").
             Si no se menciona una fecha específica, 'spentAt' es null.
-            Asociar la categoría a la que pertenece el gasto.
+            Asociar el gasto a una de las categorías disponibles en <available_categories>.
             Si la categoría no está en la lista, por defecto es "otros".
             <user-message>
             ${query}
@@ -257,10 +250,8 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
       const model = google("gemini-1.5-flash-latest");
       const bot = new Bot(this.env.TELEGRAM_TOKEN);
 
-      // Obtener la ruta del archivo de Telegram
       const file = await bot.api.getFile(fileId);
       const filePath = file.file_path;
-      console.log("filePath", filePath);
       if (!filePath) {
         this.sendMessage(
           chatId,
@@ -281,7 +272,7 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
 
       const imageArrayBuffer = await imageResponse.arrayBuffer();
 
-      // Definir el esquema para los datos de la factura que esperamos extraer
+      // Define the schema for the invoice data
       const BasicInvoiceDataSchema = z.object({
         categoryId: z
           .string()
@@ -297,16 +288,15 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
           .describe("Fecha de la factura/recibo en formato ISO 8601"),
       });
 
-      // Llamar al modelo de IA para extraer información de la imagen
-      const { object: invoiceData, usage } = await generateObject({
+      const { object: invoiceData } = await generateObject({
         model,
         schema: BasicInvoiceDataSchema,
         system: `Extrae del recibo o factura el monto total, la fecha de la factura, una breve descripción del concepto principal. Si algún dato no está claro, no se encuentra o no estás seguro, omítelo'.
-                Si <caption> esta presente se utiliza para asociar con la categoría. 
-                <available_categories>
-                ${categoriesArr.join("\n")}
-                </available_categories>
-                `,
+        Determinar la categoría a la que pertenece la factura/recibo entre los disponibles en <available_categories>.
+        Si <caption> esta presente se utiliza para asociar con la categoría, determina a cual <available_categories> pertenece.
+        <available_categories>
+        ${categoriesArr.join("\n")}
+        </available_categories>`,
         messages: [
           {
             role: "user",
@@ -326,33 +316,14 @@ export class FinancialTelegramAgent extends Agent<Env, State> {
 
       await this.saveExpense(invoiceData);
 
+      this.sendFeedbackReactionCheckReaction(chatId, message.message_id);
+    } catch (error) {
+      console.error("Error processing image:", error);
       this.sendMessage(
         chatId,
-        `Información extraída de la factura:\n${JSON.stringify(
-          { invoiceData, usage },
-          null,
-          2
-        )}`
+        "Hubo un error desconocido al procesar la imagen."
       );
-      //TODO: remove later
-      this.sumCounter();
-    } catch (error) {
-      console.error("Error procesando la imagen de la factura:", error);
-      let errorMessage = "Hubo un error desconocido al procesar la imagen.";
-      if (error instanceof Error) {
-        errorMessage = `Hubo un error al procesar la imagen: ${error.message}`;
-      }
-      this.sendMessage(chatId, errorMessage);
     }
-  }
-
-  async sumCounter() {
-    const counter = this.state.counter + 1;
-    this.setState({
-      ...this.state,
-      counter: this.state.counter + 1,
-    });
-    console.log(`user-${this.name} counter: ${counter}`);
   }
 
   // Called when a new Agent instance starts or wakes from hibernation

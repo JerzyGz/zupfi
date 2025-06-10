@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
-import { users } from "../../db/schema";
+import { user } from "../../db/schema";
 import { DrizzleDBType } from "../../db";
 import { User, UserCreate } from "./user.types";
-import { getUtcDate } from "@/worker/helpers/date";
+// import { getUtcDate } from "@/worker/helpers/date";
 
 export class UserRepository {
   private db;
@@ -12,36 +12,33 @@ export class UserRepository {
   }
 
   async create(userData: UserCreate): Promise<{ id: string }> {
-    const email = userData.email?.toLowerCase() || null;
-    const [user] = await this.db
-      .insert(users)
+    const email = userData.email.toLowerCase();
+    const [userCreated] = await this.db
+      .insert(user)
       .values({
         ...userData,
         email,
       })
       .onConflictDoNothing({
-        target: users.clerkId,
+        target: user.id,
       })
-      .returning({ id: users.id });
-    return user;
+      .returning({ id: user.id });
+    return userCreated;
   }
 
-  async findByClerkId(clerkId: string): Promise<User | undefined> {
-    const [user] = await this.db
+  async findById(id: string): Promise<User | undefined> {
+    const [usr] = await this.db
       .select()
-      .from(users)
-      .where(eq(users.clerkId, clerkId))
+      .from(user)
+      .where(eq(user.id, id))
       .limit(1);
-    return user;
+    return usr;
   }
 
-  async linkClerkIdToUserTelegram(
-    clerkId: string,
+  async linkUserIdToUserTelegram(
+    id: string,
     chatTelegramId: number
   ): Promise<void> {
-    await this.db
-      .update(users)
-      .set({ chatTelegramId, updatedAt: getUtcDate() })
-      .where(eq(users.clerkId, clerkId));
+    await this.db.update(user).set({ chatTelegramId }).where(eq(user.id, id));
   }
 }

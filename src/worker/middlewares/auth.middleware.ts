@@ -1,35 +1,25 @@
 import { HTTPException } from "hono/http-exception";
 import { createMiddleware } from "hono/factory";
 import { Env } from "@/worker";
-import { ClerkAuthService } from "../modules/auth/clerk-auth.service";
+import { AuthType, auth } from "@/worker/lib/auth";
 
 const UnAuthenticatedMessage =
   "Unauthorized access. Please provide a valid token.";
-type Variables = {
-  clerkId: string;
-};
-const authClerkMiddleware = createMiddleware<{
+
+const authBetterAuthMiddleware = createMiddleware<{
   Bindings: Env;
-  Variables: Variables;
+  Variables: AuthType;
 }>(async (c, next) => {
-  const authHeader = c.req.header("Authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  if (!session) {
     throw new HTTPException(401, {
       message: UnAuthenticatedMessage,
     });
   }
 
-  const authService = new ClerkAuthService(c.env);
-  const authResult = await authService.authenticateUser(c.req.raw);
-
-  if (!authResult.isSignedIn) {
-    throw new HTTPException(401, {
-      message: UnAuthenticatedMessage,
-    });
-  }
-
-  c.set("clerkId", authResult.userId);
-  await next();
+  c.set("user", session.user);
+  c.set("session", session.session);
+  return next();
 });
 
-export { authClerkMiddleware };
+export { authBetterAuthMiddleware };

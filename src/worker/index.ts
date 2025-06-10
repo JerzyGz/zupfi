@@ -26,6 +26,6 @@ const app = new Hono<{ Bindings: Env }>();
 app.route("/telegram", telegramRoute);
 
 app.route("/api", authRouter);
-app.route("/api/auth", userApp);
+app.route("/api/user", userApp);
 
 export default app;

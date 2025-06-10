@@ -1,4 +1,3 @@
-import { getUtcDate } from "@/worker/helpers/date";
 import { UserRepository } from "./user.repository";
 import { UserCreatePayload } from "./user.types";
 
@@ -26,28 +25,25 @@ export class UserService {
   }
 
   async create(userData: UserCreatePayload): Promise<{ id: string }> {
-    const date = getUtcDate();
     return this.authRepository.create({
       ...userData,
       id: crypto.randomUUID(),
-      createdAt: date,
-      updatedAt: date,
     });
   }
 
-  async linkClerkIdToUserTelegram({
-    clerkId,
+  async linkUserIdToUserTelegram({
+    userId,
     chatTelegramId,
   }: {
-    clerkId: string;
+    userId: string;
     chatTelegramId: number;
   }): Promise<UserLinkedResult> {
-    if (!clerkId || !clerkId.trim()) {
+    if (!userId || !userId.trim()) {
       return { success: false, reason: "INVALID_CREDENTIALS" };
     }
 
     try {
-      const user = await this.authRepository.findByClerkId(clerkId);
+      const user = await this.authRepository.findById(userId);
       console.log("User:", user);
       if (!user) {
         return { success: false, reason: "USER_WEB_NOT_FOUND" };
@@ -56,8 +52,8 @@ export class UserService {
         return { success: false, reason: "USER_ALREADY_LINKED" };
       }
 
-      await this.authRepository.linkClerkIdToUserTelegram(
-        clerkId,
+      await this.authRepository.linkUserIdToUserTelegram(
+        userId,
         chatTelegramId
       );
 
@@ -67,7 +63,7 @@ export class UserService {
     }
   }
 
-  async findByClerkId(id: string) {
-    return this.authRepository.findByClerkId(id);
+  async findById(id: string) {
+    return this.authRepository.findById(id);
   }
 }

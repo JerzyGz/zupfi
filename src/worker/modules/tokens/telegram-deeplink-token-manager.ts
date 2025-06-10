@@ -28,7 +28,7 @@ export type TokenValidationResult =
   | TokenValidationSuccess
   | TokenValidationFailure;
 
-const TOKEN_EXPIRATION_MINUTES = 3;
+const TOKEN_EXPIRATION_MINUTES = 15;
 const TOKEN_TTL_SECONDS = TOKEN_EXPIRATION_MINUTES * 60; // TTL en segundos para Cloudflare KV
 
 export class TelegramDeepLinkTokenManager {

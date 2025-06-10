@@ -71,33 +71,6 @@ export const verification = sqliteTable("verification", {
   ),
 });
 
-// // Users table
-// export const users = sqliteTable(
-//   "users",
-//   {
-//     id: text("id").primaryKey(),
-//     chatTelegramId: integer("chat_telegram_id").unique(),
-//     clerkId: text("clerk_id").unique(),
-//     userName: text("user_name").unique(),
-//     email: text("email"),
-//     name: text("name"),
-//     lastName: text("last_name"),
-//     active: integer("active", { mode: "boolean" }).notNull().default(true),
-//     ...timestampsColumns,
-//   },
-//   /**
-//    * Ensure case-insensitive uniqueness for email
-//    * @see https://orm.drizzle.team/docs/guides/unique-case-insensitive-email#sqlite
-//    * and Partial index because email can be null
-//    */
-//   (table) => [
-//     uniqueIndex("chat_telegram_id").on(table.chatTelegramId),
-//     uniqueIndex("clerk_id").on(table.clerkId),
-//     uniqueIndex("email_index")
-//       .on(table.email)
-//       .where(sql`"email" IS NOT NULL`),
-//   ]
-// );
 // Categories table
 export const categories = sqliteTable("categories", {
   id: text("id")

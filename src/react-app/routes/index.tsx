@@ -44,6 +44,7 @@ function LandingPage() {
       {
         email,
         password,
+        callbackURL: "/auth/dashboard",
       },
       {
         onRequest(context) {
@@ -120,21 +121,18 @@ function LandingPage() {
                 className="border p-2 rounded"
               />
             </label>
-            <Button type="submit">Login</Button>
+            {session ? (
+              <>
+                <Button onClick={() => signOut()}>LogOut</Button>
+                <Link to="/auth/dashboard" className="[&.active]:font-bold">
+                  Ir Dashboard
+                </Link>
+              </>
+            ) : (
+              <Button type="submit">Login</Button>
+            )}
           </form>
         </section>
-        <div className="flex flex-col gap-2 mt-4">
-          {session ? (
-            <>
-              <Button onClick={() => signOut()}>LogOut</Button>
-              <Link to="/auth/dashboard" className="[&.active]:font-bold">
-                Ir Dashboard
-              </Link>
-            </>
-          ) : (
-            <Button>Login</Button>
-          )}
-        </div>
       </main>
     </div>
   );

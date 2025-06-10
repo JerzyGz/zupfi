@@ -1,7 +1,10 @@
-import { users } from "@/worker/db/schema";
+import { user } from "@/worker/db/schema";
 
-export type User = typeof users.$inferSelect;
+export type User = typeof user.$inferSelect;
 
-export type UserCreatePayload = Omit<typeof users.$inferInsert, 'id' | "active" | 'createdAt' | "updatedAt">;
+export type UserCreatePayload = Omit<
+  typeof user.$inferInsert,
+  "id" | "active" | "createdAt" | "updatedAt"
+>;
 
-export type UserCreate = typeof users.$inferInsert;
+export type UserCreate = typeof user.$inferInsert;

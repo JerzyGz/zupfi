@@ -18,7 +18,6 @@ telegramRoute.post("/chat-web-hook", async (c) => {
 
   const body = c.req.raw.clone();
   const data = (await body.json()) as IncomingMessage;
-  console.log("req chat-web-hook", data);
   //define function to create or retrieves an agent instance for a specific chat
   const agent = async () => {
     return getAgentByName<Env, FinancialTelegramAgent>(
@@ -50,11 +49,11 @@ telegramRoute.post("/chat-web-hook", async (c) => {
           "Token inválido, genera uno nuevo desde la web."
         );
       }
-      // User exists, link the Telegram user with the Clerk user
+      // User exists, link the Telegram user with the user web account
       const chatTelegramId = ctx.message?.chat.id;
       const user = new UserService(new UserRepository(getDrizzleDb()));
-      const userLinked = await user.linkClerkIdToUserTelegram({
-        clerkId: tokenValidationResult.userId,
+      const userLinked = await user.linkUserIdToUserTelegram({
+        userId: tokenValidationResult.userId,
         chatTelegramId,
       });
 
@@ -76,19 +75,17 @@ telegramRoute.post("/chat-web-hook", async (c) => {
   });
 
   //allow only text message
-  bot.on("message:text", async () => {
-    console.log("message:text", data.message.text);
-
+  bot.on("message:text", async (ctx: Context) => {
     const tlgramAgent = await agent();
     tlgramAgent.processMessage(data);
-    return new Response(null, { status: 204 });
+    return ctx.reply("Mensaje recibido y procesando.");
   });
 
   //allow only photo message
-  bot.on("message:photo", async () => {
+  bot.on("message:photo", async (ctx: Context) => {
     const tlgramAgent = await agent();
     tlgramAgent.processImageInvoice(data);
-    return new Response(null, { status: 204 });
+    return ctx.reply("Mensaje recibido y procesando.");
   });
 
   const handler = webhookCallback(bot, "cloudflare-mod");
