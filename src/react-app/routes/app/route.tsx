@@ -6,13 +6,9 @@ import {
 } from "@/react-app/components/ui/sidebar";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/auth")({
+export const Route = createFileRoute("/app")({
   beforeLoad({ context, location }) {
-    console.log("****** context", context);
     if (!context.auth.isSignedIn) {
-      console.log(
-        "****** No está autenticado, redirigiendo a la página de inicio"
-      );
       throw redirect({
         to: "/",
         search: {

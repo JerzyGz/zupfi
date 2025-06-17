@@ -1,9 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import viteLogo from "/vite.svg";
-import { signIn, signOut, signUp, useSession } from "../lib/auth-client";
+import zupfiLogo from "/logo.svg";
+import { signOut, useSession } from "../lib/auth-client";
 import { Button } from "../components/ui/button";
-import { useState } from "react";
-import { Input } from "../components/ui/input";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -11,128 +9,44 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const { data: session } = useSession();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Handle user creation logic here
-    signUp.email(
-      {
-        name,
-        email,
-        password,
-      },
-      {
-        onRequest(context) {
-          console.log("Sign up request initiated", context);
-        },
-        onSuccess(context) {
-          console.log("Sign up successful", context);
-        },
-        onError(context) {
-          console.error("Sign up failed", context);
-        },
-      }
-    );
-  };
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Handle user creation logic here
-    signIn.email(
-      {
-        email,
-        password,
-        callbackURL: "/auth/dashboard",
-      },
-      {
-        onRequest(context) {
-          console.log("Sign in request initiated", context);
-        },
-        onSuccess(context) {
-          console.log("Sign in successful", context);
-        },
-        onError(context) {
-          console.error("Sign in failed", context);
-        },
-      }
-    );
-  };
-
   return (
     <div className="max-w-screen-xl mx-auto px-4">
       <header className="flex py-4 justify-between">
-        <img src={viteLogo} className="logo" alt="Vite logo" />
+        <div>
+          <img src={zupfiLogo} className="logo" alt="Zupfi logo" />
+        </div>
+        <div className="flex gap-4 items-center">
+          {session ? (
+            <>
+              <Button variant="default" onClick={() => signOut()}>
+                Cerrar sesión
+              </Button>
+              <Link to="/app/dashboard">Ir a Dashboard</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/sign-in">Iniciar Sesión</Link>
+              <Link to="/sign-up">Registrarse</Link>
+            </>
+          )}
+        </div>
       </header>
-
-      <main>
-        <section className="flex flex-col gap-4">
-          <h2> Create user</h2>
-          <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-            <label>
-              Name:
-              <Input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </label>
-            <label>
-              Email:
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </label>
-            <label>
-              Password:
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </label>
-            <Button type="submit">Create User</Button>
-          </form>
-        </section>
-        <section className="flex flex-col gap-4">
-          <h2> Log in</h2>
-          <form className="flex flex-col gap-2" onSubmit={handleLogin}>
-            <label>
-              Email:
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </label>
-            <label>
-              Password:
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </label>
-            {session ? (
-              <>
-                <Button onClick={() => signOut()}>LogOut</Button>
-                <Link to="/auth/dashboard" className="[&.active]:font-bold">
-                  Ir Dashboard
-                </Link>
-              </>
-            ) : (
-              <Button type="submit">Login</Button>
-            )}
-          </form>
-        </section>
+      <main className="py-16 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-4xl font-bold mb-6">Welcome to Our Platform</h1>
+          <p className="text-xl text-gray-600 mb-8">
+            We're working hard to bring you something amazing. Stay tuned for
+            updates!
+          </p>
+          <div className="flex justify-center gap-4">
+            {/* <Button variant="default" size="lg">
+              Learn More
+            </Button>
+            <Button variant="outline" size="lg">
+              Get Started
+            </Button> */}
+          </div>
+        </div>
       </main>
     </div>
   );

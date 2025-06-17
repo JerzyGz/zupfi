@@ -1,0 +1,17 @@
+<svg width="160" height="60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradB" x1="0%" y1="0%" x2="100%" y2="0%">
+      <!-- <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#ad532e"/> -->
+      <stop offset="0%" stop-color="#8E44AD"/>
+      <stop offset="100%" stop-color="#FF6EC4"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(20,15)" stroke="url(#gradB)" stroke-width="2">
+    <rect x="0" y="0" width="20" height="20" rx="5" fill="none"/>
+    <rect x="10" y="10" width="20" height="20" rx="5" fill="none"/>
+  </g>
+
+  <text x="70" y="40" font-family="Segoe UI, sans-serif" font-size="32" fill="url(#gradB)">Zupfi</text>
+</svg>
